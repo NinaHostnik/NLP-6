@@ -5,9 +5,10 @@ from transformers import AutoTokenizer
 from transformers import DefaultDataCollator
 from transformers import create_optimizer
 from transformers import AutoConfig, TFAutoModelForQuestionAnswering
+from transformers import TrainingArguments
 
 squad = load_dataset("squad")
-tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 
 def preprocess_function(examples):
@@ -69,7 +70,7 @@ tf_train_set = tokenized_squad["train"].to_tf_dataset(
     columns=["attention_mask", "input_ids", "start_positions", "end_positions"],
     dummy_labels=True,
     shuffle=True,
-    batch_size=16,
+    batch_size=8,
     collate_fn=data_collator,
 )
 
@@ -77,12 +78,12 @@ tf_validation_set = tokenized_squad["validation"].to_tf_dataset(
     columns=["attention_mask", "input_ids", "start_positions", "end_positions"],
     dummy_labels=True,
     shuffle=False,
-    batch_size=16,
+    batch_size=8,
     collate_fn=data_collator,
 )
 
-batch_size = 16
-num_epochs = 2
+batch_size = 8
+num_epochs = 1
 total_train_steps = (len(tokenized_squad["train"]) // batch_size) * num_epochs
 optimizer, schedule = create_optimizer(
     init_lr=2e-5,
@@ -90,15 +91,13 @@ optimizer, schedule = create_optimizer(
     num_train_steps=total_train_steps,
 )
 
+# get pretrained model
 config = AutoConfig.from_pretrained("bert-base-uncased")
 model = TFAutoModelForQuestionAnswering.from_config(config)
-'''
-model.compile(
-    loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-    optimizer=tf.keras.optimizers.RMSprop(),
-    metrics=["accuracy"],
-)
-'''
-#model = TFAutoModelForQuestionAnswering("bert-base-uncased")
+
 model.compile(optimizer=optimizer)
-model.fit(x=tf_train_set, validation_data=tf_validation_set, epochs=3)
+# fine-tune model
+model.fit(x=tf_train_set, validation_data=tf_validation_set, epochs=1)
+# save model
+model.save_pretrained('./')
+
