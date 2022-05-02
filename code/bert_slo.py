@@ -4,7 +4,7 @@ import tensorflow as tf
 from transformers import AutoTokenizer
 from transformers import DefaultDataCollator
 from transformers import create_optimizer
-from transformers import BertConfig, TFBertModel
+from transformers import BertConfig, TFBertForQuestionAnswering
 
 squad_slo = load_dataset('json', data_files={'train': './data/squad2_SLO_train.json', 'validation': './data/squad2_SLO_validation.json'}, field='data')
 
@@ -100,7 +100,7 @@ optimizer, schedule = create_optimizer(
 
 # get pretrained model
 config = BertConfig.from_pretrained("bert-base-multilingual-cased")
-model_slo = TFBertModel.from_config(config)
+model_slo = TFBertForQuestionAnswering.from_config(config)
 
 model_slo.compile(optimizer=optimizer)
 
