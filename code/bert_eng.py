@@ -6,7 +6,7 @@ from transformers import DefaultDataCollator
 from transformers import create_optimizer
 from transformers import BertConfig, TFBertForQuestionAnswering
 
-squad_eng = load_dataset('json', data_files={'train': './code/data/squad2_ENG_train.json', 'validation': './code/data/squad2_ENG_validation.json'}, field='data')
+squad_eng = load_dataset('json', data_files={'train': './data/cleaned_ENG_train.json', 'validation': './data/cleaned_ENG_validation.json'}, field='data')
 
 tokenizer = AutoTokenizer.from_pretrained("bert-base-multilingual-cased")
 
@@ -31,11 +31,11 @@ def preprocess_function(examples):
     for i, offset in enumerate(offset_mapping):
         answer = answers[i]
         ctx = context[i]
-        start_char = len(ctx) + 1
-        end_char = len(ctx) + 1
-        if len(answer) > 0:
-            start_char = ctx.find(answer[0]['text']) if ctx.find(answer[0]['text']) > -1 else len(ctx) + 1
-            end_char = start_char + len(answer[0]['text']) if ctx.find(answer[0]['text']) > -1 else len(ctx) + 1
+        #start_char = len(ctx) + 1
+        #end_char = len(ctx) + 1
+        #if len(answer) > 0:
+        start_char = ctx.find(answer[0]['text']) if ctx.find(answer[0]['text']) > -1 else len(ctx) + 1
+        end_char = start_char + len(answer[0]['text']) if ctx.find(answer[0]['text']) > -1 else len(ctx) + 1
         sequence_ids = inputs.sequence_ids(i)
 
         # Find the start and end of the context
