@@ -42,14 +42,14 @@ f1=izracunajF1(prediction, groundTruths)
 #answer=["three dimensional index"]
 #print("Question: "+question+"\n\nContext: "+context+"\n\nGround truths: "+groundTruths+"\n\nprediction: "+prediction)
 #import podatkov
-testImport = open('./code/data/cleaned_ENG_test.json', "r", encoding='UTF-8')
+testImport = open('D:/Faks/ONJ/NLP-6/code/data/cleaned_ENG_test.json', "r", encoding='UTF-8')
 data_string = testImport.read()
 testImport.close()
 testData = json.loads(data_string)
 stPravilnih=0
 stNeprevilnih=0
 stPredolgih=0
-qamodel=pipeline('question-answering', model="./code/roberta Model 3 epoch lr 5e-5 base preprocess", tokenizer=("roberta-base"))
+qamodel=pipeline('question-answering', model="D:/Faks/ONJ/NLP-6/code/modelShuffleOn", tokenizer=("roberta-base"))
 #qamodel2=pipeline('question-answering', model="keras-io/transformers-qa")
 i=0
 f1Vsi=[]
