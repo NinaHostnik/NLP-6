@@ -9,11 +9,12 @@ def izracunajF1(prediction, realAnswer, translator, stop_words):
     #odstranimo locila obema stringoma
     predictionBrezLocil=prediction[0].translate(translator)
     realAnswerBrezLocil=realAnswer[0].translate(translator)
-    #tokeniziramo
+    #tokeniziramo in odstranimo stopwords
     predictionTokeni=nltk.word_tokenize(predictionBrezLocil) #Pridobi tokene za napoved in napoved modela
     normaliziraniPredictionTokeni=[w for w in predictionTokeni if not w.lower() in stop_words] #te tokene normalizira, kar pomeni, da jim odstrani ločila in stop words za vsako besedo
     realAnswerTokeni=nltk.word_tokenize(realAnswerBrezLocil)
     normaliziraniRealAnswerTokeni=[w for w in realAnswerTokeni if not w.lower() in stop_words]
+    #nastavitev spremenljivk in preverjanje vrednosti
     truePositive=0
     falsePositive=0
     falseNegative=0
@@ -28,6 +29,7 @@ def izracunajF1(prediction, realAnswer, translator, stop_words):
             falseNegative+=1   
     if truePositive==0:
         return 0, 0, falsePositive, falseNegative
+    #izracun precision recall ter nato f1 score
     precision=truePositive/(truePositive+falsePositive)             #izracun precision (pravi najdeni/(pravi najdeni+narobni najdeni))
     recall=truePositive/(truePositive+falseNegative)                #izracun recall (pravi najdeni/(pravi najdeni+pravi nenajdeni))
     return 2*(precision*recall)/(precision+recall), truePositive, falsePositive, falseNegative                      #izracun F1 score+vrne true positive, false positive in false negative
@@ -42,25 +44,22 @@ testImport.close()
 testData = json.loads(data_string)
 stop_words=set(stopwords.words('english')).union(set(stopwords.words('slovene')))
 #inicializacija spremenljivk
+i=0
 stPravilnih=0
 stNeprevilnih=0
 stPredolgih=0
 stPerfectMatch=0
 f1Vsi=[]
 accuracyVsi=[]
-editDistances=[]
+levenstheinSimilarities=[]
 tabelaTruePositive=[]
 tabelaFalsePositive=[]
 tabelaFalseNegative=[]
 #inicializacija pipeline za pridobivanje odgovorov
-#qamodel=pipeline('question-answering', model="D:/Faks/ONJ/NLP-6/code/Primerjava modelov/BART", tokenizer=("roberta-base"))
+#qamodel=pipeline('question-answering', model="D:/Faks/ONJ/NLP-6/code/Primerjava modelov/ROBERTA", tokenizer=("roberta-base"))
+qamodel=pipeline('question-answering', model="D:/Faks/ONJ/NLP-6/code/Modeli/ANG", tokenizer=("roberta-base"))
 translator=str.maketrans('', '', string.punctuation)
-prediction="Jaz sem, bebec."
-realAnswer="Jaz sem, bebec. the"
-f1, tp, fp, fn=izracunajF1(prediction, realAnswer, translator, stop_words)
-print(f1)
-"""
-i=0
+#zanka za preverjanje vseh vprašanj iz test podatkov
 for data in testData['data']:   #iz test data vzame primer po primer
     prediction=pridobiPrediction(data['question'], data['context'], qamodel)    #v pipeline vstavi vprasanje in kontekst
     realAnswer=data['answers']                                                  #pridobi pravi odgovor
@@ -69,8 +68,8 @@ for data in testData['data']:   #iz test data vzame primer po primer
     tabelaFalsePositive.append(falsePositive)                                                           #doda false positive primere v tabelo
     tabelaFalseNegative.append(falseNegative)                                                           #doda false negative primere v tabelo
     editDistance=editdistance.eval(realAnswer[0]['text'], prediction)                                   #izracuna edit distance
-    editDistances.append(editDistance)                                                                  #doda edit distance v tabelo
-    if f1==1.0:                                                                                         #ce se odgovora popolnoma ujemata(f1 score==1) se doda stevec popolnoma enakih odgovorov
+    levenstheinSimilarities.append(1-(editDistance/max([len(realAnswer[0]['text']), len(prediction)])))         #iz edit distance pridobimo 
+    if editDistance==0:                                                                                         #ce se odgovora popolnoma ujemata(f1 score==1) se doda stevec popolnoma enakih odgovorov
         stPerfectMatch+=1
     if str(realAnswer) in str(prediction):
         stPredolgih=stPredolgih+1
@@ -81,8 +80,8 @@ for data in testData['data']:   #iz test data vzame primer po primer
     f1Vsi.append(f1)                                                                                    #dodamo F1 score v tabelo, iz katere se bo nato izracunal macro f1 povprecje
     i=i+1
     print(i)
-    if i==1000:
-        break
+    #if i==100:
+        #break
 sumTruePositive=sum(tabelaTruePositive)                                                                 #sestevek true positive
 sumFalsePositive=sum(tabelaFalsePositive)                                                               #sestevek false positive
 sumFalseNegative=sum(tabelaFalseNegative)                                                               #sestevek false negative
@@ -93,7 +92,6 @@ F1micro=2*(skupnPrecision*skupnRecall)/(skupnPrecision+skupnRecall)
 #izpis
 print(str(stPravilnih)+" "+str(stNeprevilnih)+" "+str(stPredolgih))
 print("F1 macro: " + str(sum(f1Vsi)/len(f1Vsi)))                                                                            #izracun F1 macro
-print("Average edit: "+str(sum(editDistances)/len(editDistances)))
 print("F1 micro: "+str(F1micro))
+print("Average levenstein similaritiy: "+str(sum(levenstheinSimilarities)/len(levenstheinSimilarities)))
 print("Perfect match: "+str(stPerfectMatch))
-"""
