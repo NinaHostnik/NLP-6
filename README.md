@@ -19,4 +19,4 @@ import nltk
 nltk.download('stopwords')
 nltk.download('punkt')
 
-In the file make sure to change the paths for: in line 41: to the path of your test data, in line 59 model to the path to the folder in which you have your model and the tokenizer to the appropriate tokenizer for the model(the exact string that needs to be input can be found on www.huggingface.co)
+In the file make sure to change the paths for: in line 41: to the path of your test data, in line 59: to the path to the folder in which you have your model and the tokenizer to the appropriate tokenizer for the model(the exact string that needs to be input can be found on www.huggingface.co)
