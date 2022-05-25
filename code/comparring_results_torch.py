@@ -38,7 +38,7 @@ def pridobiPrediction(question, paragraph, qamodel):
     result=qamodel(question = question, context = paragraph)
     return result['answer']
 #import podatkov
-testImport = open('D:/Faks/ONJ/NLP-6/code/data/cleaned_ENG_test.json', "r", encoding='UTF-8')
+testImport = open('D:/Faks/ONJ/NLP-6/code/data/cleaned_SLO_test.json', "r", encoding='UTF-8')
 data_string = testImport.read()
 testImport.close()
 testData = json.loads(data_string)
@@ -56,8 +56,7 @@ tabelaTruePositive=[]
 tabelaFalsePositive=[]
 tabelaFalseNegative=[]
 #inicializacija pipeline za pridobivanje odgovorov
-#qamodel=pipeline('question-answering', model="D:/Faks/ONJ/NLP-6/code/Primerjava modelov/ROBERTA", tokenizer=("roberta-base"))
-qamodel=pipeline('question-answering', model="D:/Faks/ONJ/NLP-6/code/Modeli/ANG", tokenizer=("roberta-base"))
+qamodel=pipeline('question-answering', model="D:/Faks/ONJ/NLP-6/code/Primerjava modelov/SLO/Multibert", tokenizer=("bert-base-multilingual-cased"))
 translator=str.maketrans('', '', string.punctuation)
 #zanka za preverjanje vseh vprašanj iz test podatkov
 for data in testData['data']:   #iz test data vzame primer po primer
@@ -80,8 +79,8 @@ for data in testData['data']:   #iz test data vzame primer po primer
     f1Vsi.append(f1)                                                                                    #dodamo F1 score v tabelo, iz katere se bo nato izracunal macro f1 povprecje
     i=i+1
     print(i)
-    #if i==100:
-        #break
+    if i==1000:
+        break
 sumTruePositive=sum(tabelaTruePositive)                                                                 #sestevek true positive
 sumFalsePositive=sum(tabelaFalsePositive)                                                               #sestevek false positive
 sumFalseNegative=sum(tabelaFalseNegative)                                                               #sestevek false negative
