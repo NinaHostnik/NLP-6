@@ -2,8 +2,6 @@
 Due to the size of the JSON data files and BERT model files, they cannot be added to the git repository and are accessible at the following link:
 https://drive.google.com/drive/folders/1Heg5ACPz-Fncsu73Cp9tkOxsnpz8DQZY?usp=sharing
 
-If you want to test with our models and train and test data, 
-
 Instructions to start the fine tuning process:
 You must make sure you have installed the following libraries: Pytorch, transformers, datasets
 Run the following command in the folder where run_qa_modified.py is located:
