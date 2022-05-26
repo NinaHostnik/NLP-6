@@ -4,6 +4,7 @@ https://drive.google.com/drive/folders/1Heg5ACPz-Fncsu73Cp9tkOxsnpz8DQZY?usp=sha
 
 Instructions to start the fine tuning process:
 You must make sure you have installed the following libraries: Pytorch, transformers, datasets
+EDIT: transformers must be installed from source using this command: pip install git+https://github.com/huggingface/transformers
 
 Run the following command in the folder where run_qa_modified.py is located:
 
